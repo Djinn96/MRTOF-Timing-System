@@ -1,0 +1,48 @@
+body {
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+    text-align: center;
+}
+
+.panel {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  background-color: rgb(111, 169, 255);
+}
+
+.panel-row {
+  display: flex;
+}
+
+.param {
+  padding: 10px;
+}
+
+input[type='number'] {
+  width: 100px;
+}
+
+.timing-param {
+  display: flex;
+  flex-direction: row;
+  
+}
+
+.timing-param > p {
+  width: 100px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 2px;
+  margin: 2px;
+  text-align: end;
+  background-color: white;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}

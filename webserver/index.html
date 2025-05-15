@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MRTOF Timing System</title>
+    <link rel="stylesheet" href="./assets/styles.css">
+    <link rel="icon" href="./assets/wnsc_icon.png" type="image/x-icon">
+  </head>
+  <body>
+    <main>
+        <h1>MRTOF Timing System</h1>
+        <div class="panel panel-row">
+          <div>
+            <p>test</p>
+            <button id="readServer" onclick="readServer()">Read Server</button>
+            <button id="writeServer" onclick="writeServer()">Send to Server</button>
+            <button id="readFPGAButton" onclick="readFPGATimings()">Read FPGA</button>
+            <button id="writeFPGAButton" onclick="writeFPGATimings()">Write to FPGA</button>
+          </div>
+        </div>
+        <div class="flex-row">
+          <div class="panel">
+            <h2>Duration Parameter Panel</h2>
+            <form id="durations" onsubmit="return false">
+            <div class="panel-row">
+              <div class="param"><label for="M_Period"     >M_Period     </label><br><input type="number" step="0.001" id="M_Period"      name="M_Period"      value=""></div>
+              <div class="param"><label for="Ma"           >Ma           </label><br><input type="number" step="0.001" id="Ma"            name="Ma"            value=""></div>
+              <div class="param"><label for="toffset"      >toffset      </label><br><input type="number" step="0.001" id="toffset"       name="toffset"       value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FTrfclk"      >FTrfclk      </label><br><input type="number" step="0.001" id="FTrfclk"       name="FTrfclk"       value=""></div>
+              <div class="param"><label for="rf2acc"       >rf2acc       </label><br><input type="number" step="0.001" id="rf2acc"        name="rf2acc"        value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="fQTacc"       >fQTacc       </label><br><input type="number" step="0.001" id="fQTacc"        name="fQTacc"        value=""></div>
+              <div class="param"><label for="fQTcool"      >fQTcool      </label><br><input type="number" step="0.001" id="fQTcool"       name="fQTcool"       value=""></div>
+              <div class="param"><label for="fQTeje"       >fQTeje       </label><br><input type="number" step="0.001" id="fQTeje"        name="fQTeje"        value=""></div>
+              <div class="param"><label for="fQTthru"      >fQTthru      </label><br><input type="number" step="0.001" id="fQTthru"       name="fQTthru"       value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="rQTacc"       >rQTacc       </label><br><input type="number" step="0.001" id="rQTacc"        name="rQTacc"        value=""></div>
+              <div class="param"><label for="rQTcool"      >rQTcool      </label><br><input type="number" step="0.001" id="rQTcool"       name="rQTcool"       value=""></div>
+              <div class="param"><label for="rQTeje"       >rQTeje       </label><br><input type="number" step="0.001" id="rQTeje"        name="rQTeje"        value=""></div>
+              <div class="param"><label for="rQTthru"      >rQTthru      </label><br><input type="number" step="0.001" id="rQTthru"       name="rQTthru"       value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FTacc1"       >FTacc1       </label><br><input type="number" step="0.001" id="FTacc1"        name="FTacc1"        value=""></div>
+              <div class="param"><label for="FTcool1"      >FTcool1      </label><br><input type="number" step="0.001" id="FTcool1"       name="FTcool1"       value=""></div>
+              <div class="param"><label for="FTdmp1"       >FTdmp1       </label><br><input type="number" step="0.001" id="FTdmp1"        name="FTdmp1"        value=""></div>
+              <div class="param"><label for="FTthru1"      >FTthru1      </label><br><input type="number" step="0.001" id="FTthru1"       name="FTthru1"       value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FTacc2"       >FTacc2       </label><br><input type="number" step="0.001" id="FTacc2"        name="FTacc2"        value=""></div>
+              <div class="param"><label for="FTcool2"      >FTcool2      </label><br><input type="number" step="0.001" id="FTcool2"       name="FTcool2"       value=""></div>
+              <div class="param"><label for="FTdmp2"       >FTdmp2       </label><br><input type="number" step="0.001" id="FTdmp2"        name="FTdmp2"        value=""></div>
+              <div class="param"><label for="FTthru2"      >FTthru2      </label><br><input type="number" step="0.001" id="FTthru2"       name="FTthru2"       value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="QTc2FTa"      >QTc2FTa      </label><br><input type="number" step="0.001" id="QTc2FTa"       name="QTc2FTa"       value=""></div>
+              <div class="param"><label for="FTeje2dmp"    >FTeje2dmp    </label><br><input type="number" step="0.001" id="FTeje2dmp"     name="FTeje2dmp"     value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FTejeW"       >FTejeW       </label><br><input type="number" step="0.001" id="FTejeW"        name="FTejeW"        value=""></div>
+              <div class="param"><label for="rfoff2eje"    >rfoff2eje    </label><br><input type="number" step="0.001" id="rfoff2eje"     name="rfoff2eje"     value=""></div>
+              <div class="param"><label for="FT1eje2FT2eje">FT1eje2FT2eje</label><br><input type="number" step="0.001" id="FT1eje2FT2eje" name="FT1eje2FT2eje" value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FT1eje2DT"    >FT1eje2DT    </label><br><input type="number" step="0.001" id="FT1eje2DT"     name="FT1eje2DT"     value=""></div>
+              <div class="param"><label for="FT1DTW"       >FT1DTW       </label><br><input type="number" step="0.001" id="FT1DTW"        name="FT1DTW"        value=""></div>
+              <div class="param"><label for="FT2eje2DT2"   >FT2eje2DT2   </label><br><input type="number" step="0.001" id="FT2eje2DT2"    name="FT2eje2DT2"    value=""></div>
+              <div class="param"><label for="FT2DTW"       >FT2DTW       </label><br><input type="number" step="0.001" id="FT2DTW"        name="FT2DTW"        value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FT1eje2MTinj" >FT1eje2MTinj </label><br><input type="number" step="0.001" id="FT1eje2MTinj"  name="FT1eje2MTinj"  value=""></div>
+              <div class="param"><label for="MTinjW"       >MTinjW       </label><br><input type="number" step="0.001" id="MTinjW"        name="MTinjW"        value=""></div>
+              <div class="param"><label for="FT1eje2MTeje" >FT1eje2MTeje </label><br><input type="number" step="0.001" id="FT1eje2MTeje"  name="FT1eje2MTeje"  value=""></div>
+              <div class="param"><label for="MTejeW"       >MTejeW       </label><br><input type="number" step="0.001" id="MTejeW"        name="MTejeW"        value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="FT2eje2MTinj" >FT2eje2MTinj </label><br><input type="number" step="0.001" id="FT2eje2MTinj"  name="FT2eje2MTinj"  value=""></div>
+              <div class="param"><label for="MTinjW2"      >MTinjW2      </label><br><input type="number" step="0.001" id="MTinjW2"       name="MTinjW2"       value=""></div>
+              <div class="param"><label for="FT2eje2MTeje" >FT2eje2MTeje </label><br><input type="number" step="0.001" id="FT2eje2MTeje"  name="FT2eje2MTeje"  value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="BNon"         >BNon         </label><br><input type="number" step="0.001" id="BNon"          name="BNon"          value=""></div>
+              <div class="param"><label for="BNwidth"      >BNwidth      </label><br><input type="number" step="0.001" id="BNwidth"       name="BNwidth"       value=""></div>
+              <div class="param"><label for="BNon2"        >BNon2        </label><br><input type="number" step="0.001" id="BNon2"         name="BNon2"         value=""></div>
+              <div class="param"><label for="BNwidth2"     >BNwidth2     </label><br><input type="number" step="0.001" id="BNwidth2"      name="BNwidth2"      value=""></div>
+            </div>
+
+            <div class="panel-row">
+              <div class="param"><label for="x1"           >x1           </label><br><input type="number" step="0.001" id="x1"            name="x1"            value=""></div>
+              <div class="param"><label for="extra"        >extra        </label><br><input type="number" step="0.001" id="extra"         name="extra"         value=""></div>
+            </div>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Calc Timing Panel</h2>
+            <div id="calcTimings"></div>
+          </div>
+          <div class="panel">
+            <h2>FPGA Timing Panel</h2>
+            <div id="fpgaTimings"></div>
+          </div>
+        </div>
+
+    </main>
+  </body>
+  <script src="scripts/script.js"></script>
+</html>
