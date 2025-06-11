@@ -134,6 +134,7 @@ class TimingCalculator:
     def getDurationParams(self): return self.__dPar__.copy()
     def getTimingParams(self): return self.__tPar__.copy()
     def getFPGATimingParams(self): return self.__tPar_FPGA__.copy()
+    def getBitPatternArray(self): return self.__bitPatternArray__.copy()
 
     def calcTimings(self):
         """
@@ -266,3 +267,4 @@ class TimingCalculator:
         return pulses
     
     def getXORMask(self): return self.__xorMask__
+    def getXORbit(self,i): return 1 if self.__xorMask__ & 2**i > 0 else 0

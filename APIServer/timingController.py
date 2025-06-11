@@ -1,39 +1,66 @@
 import numpy as np
 import pandas as pd
-from pythonlib.tcplib import timingTCPSocket
-from pythonlib.timinglib import TimingCalculator, DurationParam, oneShotArrayMap
+from datetime import datetime
 
+from pythonlib.tcplib import timingTCPSocket
+from pythonlib.timinglib import TimingCalculator, DurationParam, bitPatternArrayMap
 PORT = 4001
 IP = "202.13.199.70"
 
+FILENAME_DURATIONS = "fpga_durations"
+FILENAME_BITPATTERNARRAY = "fpga_bitPatternArray"
+
 class timingController:
-    def __init__(self,durationsFilePath:str="../settings/fpga_durations.csv",bpaFilePath:str="../settings/fpga_bitPatternArray.csv"):
+    def __init__(self,settingsDir:str = "../settings/"):
         self.socket = timingTCPSocket(IP,PORT)
         self.__timingCalculator__ = TimingCalculator(200)
-        self.fpgaDurationsFile = durationsFilePath
-        self.fpgaBPAFilePath = bpaFilePath
-        self.updateDurationsFromFile()
-        self.updateBitPatternArrayFromFile()
+        self.settingsDir = settingsDir
+        self.readDurationsFromFile()
+        self.readBitPatternArrayFromFile()
         return
 
-    # FILE READ OPERATIONS
+    # FILE IO OPERATIONS
 
-    def updateDurationsFromFile(self):
-        durations = pd.read_csv(self.fpgaDurationsFile)
+    def readDurationsFromFile(self):
+        durations = pd.read_csv(self.settingsDir + FILENAME_DURATIONS + ".csv")
         for i,row in durations.iterrows(): self.__timingCalculator__.setDurationParam(DurationParam[row["name"]],row["value"])
         self.__timingCalculator__.calcTimings()
         self.__timingCalculator__.populateOSAFromTimings()
         return
     
-    def updateBitPatternArrayFromFile(self):
-        bpaDF = pd.read_csv(self.fpgaBPAFilePath)
+    def readBitPatternArrayFromFile(self):
+        '''
+        bitpatternarray file should contain both bitpattern array information and xormask information as different columns
+        '''
+        bpaDF = pd.read_csv(self.settingsDir + FILENAME_BITPATTERNARRAY + ".csv")
         bpa = np.array(bpaDF['value'],dtype=np.dtype(int)) # us
         self.__timingCalculator__.setBitPatternArray(bpa)
         xorMask = np.array([v*2**i for i,v in enumerate(bpaDF['xorMask'])]).sum()
         self.__timingCalculator__.setXORMask(xorMask)
         return
     
-    # FRONTEND READ OPERATIONS
+    def writeDurationsToFile(self):
+        durationsDF = pd.DataFrame(columns=['name','value'])
+        durations = self.__timingCalculator__.getDurationParams()
+        for i,val in enumerate(durations):
+            try:    durationsDF.loc[len(durationsDF)] = [DurationParam(i).name,val]
+            except: pass
+        
+        durationsDF.to_csv(self.settingsDir + FILENAME_DURATIONS + ".csv",index=False) #save to file for easy retrieve on server restart
+        durationsDF.to_csv(self.settingsDir + FILENAME_DURATIONS + datetime.now().strftime("_%Y-%m-%d_%H-%M-%S") + ".csv",index=False) #save with timestamp for logging purposes
+
+    def writeBitPatternArrayToFile(self):
+        bpaDF = pd.DataFrame(columns=['name','value','xorMask'])
+        bpa = self.__timingCalculator__.getBitPatternArray()
+        for i,val in enumerate(bpa):
+            try:    bpaDF.loc[len(bpaDF)] = [bitPatternArrayMap[i],val,self.__timingCalculator__.getXORbit(i)]
+            except: pass
+        
+        bpaDF.to_csv(self.settingsDir + FILENAME_BITPATTERNARRAY + ".csv",index=False) #save to file for easy retrieve on server restart
+        bpaDF.to_csv(self.settingsDir + FILENAME_BITPATTERNARRAY + datetime.now().strftime("_%Y-%m-%d_%H-%M-%S") + ".csv",index=False) #save with timestamp for logging purposes
+    
+
+    # FRONTEND IO OPERATIONS
 
     def updateDurationParameters(self,data:dict):
         '''
@@ -156,7 +183,7 @@ class timingController:
         self.socket.close()
         print("Execution Done!")
 
-    # Getters
+    # GETTERS
 
     def getBPATimingPulses(self): return self.__timingCalculator__.getBitPatternArrayPulses()
     def getXORMask(self): return self.__timingCalculator__.getXORMask()

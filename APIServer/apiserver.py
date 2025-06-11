@@ -85,3 +85,8 @@ def get_TimingChart():
 
     img = bpaChart(period,timingList,bpaNames,xorMask)
     return responses.Response(content=img, media_type="image/png")
+
+@app.post("/saveToFile")
+def save_To_File():
+    controller.writeDurationsToFile()
+    controller.writeBitPatternArrayToFile()

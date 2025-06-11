@@ -60,6 +60,8 @@ async function writeFPGATimings() {
     }
     
     readButton.innerHTML = "Write FPGA"
+
+    await readFPGATimings()
 }
 
 function submitDurations() {
@@ -166,6 +168,16 @@ async function getTimingSignalChart() {
         console.log(error)
         return
     }
+}
+
+async function saveToFile() {
+    await writeServer() // write current settings to server first
+
+    const saveButton = document.getElementById("saveToFile")
+    saveButton.innerHTML = "Saving..."
+    try { httpRequest("/saveToFile","POST") }
+    catch (error) { saveButton.innerHTML = "Save ERROR";  return }
+    saveButton.innerHTML = "Save to File"
 }
 
 async function readAll() {
