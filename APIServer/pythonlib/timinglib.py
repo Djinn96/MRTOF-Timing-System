@@ -71,6 +71,8 @@ timingParams = ["Period",  "p",
 
 TimingParam = Enum('TimingParam', timingParams, start=0)
 
+# 16 outputs from timing FPGA
+bitPatternArrayMap = ["FT eje (NIM)","BN","TAG","MT eje","MT inj","FT RF","FT eje (TTL)","DT","MF","Veto","FT A","FT B","rQT A","rQT B","fQT A","fQT B",]
 
 oneShotArrayMap = [
     TimingParam.Period,      TimingParam.p,
@@ -107,15 +109,23 @@ class TimingCalculator:
     def __init__(self,clockFreq:int=200):
         NumDurationParams = len(DurationParam)
         NumTimingParams = len(TimingParam)
-        self.__dPar__       = np.zeros(NumDurationParams,dtype=np.dtype(float))   # __dPar__              can be updated from file or from webserver
-        self.__tPar__       = np.zeros(NumTimingParams,dtype=np.dtype(float))     # __tPar__              is to be calculated from __dPar__ only
-        self.__oneShotArray__ = np.zeros(64,dtype=np.dtype('u4'))                 # __oneShotArray__      is to be calculated from __tPar__ only
-        self.__oneShotArray_FPGA__ = np.zeros(64,dtype=np.dtype('u4'))            # __oneShotArray_FPGA__ is to be populated direct from FPGA only
-        self.__tPar_FPGA__  = np.zeros(NumTimingParams,dtype=np.dtype(float))     # __tPar_FPGA__         is to be calculated from __oneShotArray_FPGA__ only
+        self.__dPar__                 = np.zeros(NumDurationParams,dtype=np.dtype(float))   # __dPar__                 can be updated from file or from webserver (us)
+        self.__tPar__                 = np.zeros(NumTimingParams,dtype=np.dtype(float))     # __tPar__                 is to be calculated from __dPar__ only
+        self.__oneShotArray__         = np.zeros(64,dtype=np.dtype('u4'))                   # __oneShotArray__         is to be calculated from __tPar__ only
+        self.__oneShotArray_FPGA__    = np.zeros(64,dtype=np.dtype('u4'))                   # __oneShotArray_FPGA__    is to be populated direct from FPGA only
+        self.__tPar_FPGA__            = np.zeros(NumTimingParams,dtype=np.dtype(float))     # __tPar_FPGA__            is to be calculated from __oneShotArray_FPGA__ only
+        self.__bitPatternArray__      = np.zeros(16,dtype=np.dtype('u4'))                   # __bitPatternArray__      is to be calculated from UI only
+        self.__bitPatternArray_FPGA__ = np.zeros(16,dtype=np.dtype('u4'))                   # __bitPatternArray_FPGA__ is to be populated direct from FPGA only
+        self.__xorMask__              = 0
+        self.__xorMask_FPGA__         = 0
         self.clockFreq    = clockFreq #MHz
     
     def setDurationParam(self,param:DurationParam,value): self.__dPar__[param.value] = value
     def setFPGAOneShotArray(self,osa:np.ndarray): self.__oneShotArray_FPGA__ = osa
+    def setBitPatternArray(self,bpa:np.ndarray): self.__bitPatternArray__ = bpa
+    def setFPGABitPatternArray(self,bpa:np.ndarray): self.__bitPatternArray_FPGA__ = bpa
+    def setXORMask(self,mask:int): self.__xorMask__ = mask
+    def setFPGAXORMask(self,mask:int): self.__xorMask_FPGA__ = mask
 
     def getTimingParam(self,par:TimingParam): return self.__tPar__[par]
     def getOneShotArrayElement(self,idx:int): return self.__oneShotArray__[idx]
@@ -244,3 +254,15 @@ class TimingCalculator:
 
         for i,par in enumerate(oneShotArrayMap):
             self.__tPar_FPGA__[par.value] = OSA_time[i]
+
+    def getBitPatternArrayPulses(self):
+        pulses = []
+        for register in self.__bitPatternArray__:
+            indices = [i for i in range(32) if (2**i & register > 0)]
+            pairs =[]
+            for i in indices: pairs.append(self.__oneShotArray__[2*i+2:2*i+4]/self.clockFreq)
+            pulses.append(pairs)
+
+        return pulses
+    
+    def getXORMask(self): return self.__xorMask__

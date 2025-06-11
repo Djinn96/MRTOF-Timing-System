@@ -7,11 +7,15 @@ h1 {
 }
 
 .panel {
-  border: 1px solid black;
-  border-radius: 10px;
-  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  padding: 10px;
   margin: 5px;
   background-color: rgb(111, 169, 255);
+}
+
+img {
+  margin: 5px;
 }
 
 .panel-row {
@@ -19,7 +23,7 @@ h1 {
 }
 
 .param {
-  padding: 10px;
+  padding: 5px;
 }
 
 input[type='number'] {
@@ -29,12 +33,11 @@ input[type='number'] {
 .timing-param {
   display: flex;
   flex-direction: row;
-  
 }
 
 .timing-param > p {
   width: 100px;
-  border: 1px solid black;
+  border: 1px solid transparent;
   border-radius: 5px;
   padding: 2px;
   margin: 2px;
@@ -45,4 +48,19 @@ input[type='number'] {
 .flex-row {
   display: flex;
   flex-direction: row;
+}
+
+button {
+  border: 1px solid transparent;
+  width: 150px;
+  border-radius: 20px;
+  background-color: white;
+}
+
+button:hover {
+  background-color: rgb(233, 233, 233);
+}
+
+button:active {
+  background-color: rgb(190, 190, 190);
 }

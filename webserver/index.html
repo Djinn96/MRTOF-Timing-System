@@ -11,14 +11,15 @@
   <body>
     <main>
         <h1>MRTOF Timing System</h1>
-        <div class="panel panel-row">
-          <div>
-            <p>test</p>
-            <button id="readServer" onclick="readServer()">Read Server</button>
-            <button id="writeServer" onclick="writeServer()">Send to Server</button>
-            <button id="readFPGAButton" onclick="readFPGATimings()">Read FPGA</button>
-            <button id="writeFPGAButton" onclick="writeFPGATimings()">Write to FPGA</button>
-          </div>
+        <div class="panel">
+          <p><button id="readServer" onclick="readServer()">Read Server</button> Reads all parameters from values in server</p>
+          <p><button id="writeServer" onclick="writeServer()">Send to Server</button> Writes Duration Parameters to the server and calculates timing parameters</p>
+          <p><button id="readFPGAButton" onclick="readFPGATimings()">Read FPGA</button> Reads FPGA registers and converts to timing parameters</p>
+          <p><button id="writeFPGAButton" onclick="writeFPGATimings()">Write to FPGA</button> Writes OneShotArray to FPGA and execute (TODO: handle BitPatternArray and XORMask)</p>
+        </div>
+        <div class="panel">
+          <h2>Timing Signal (User Defined)</h2>
+          <div id="timingChart"></div>
         </div>
         <div class="flex-row">
           <div class="panel">

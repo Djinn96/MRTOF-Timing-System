@@ -27,10 +27,20 @@ async function readFPGATimings() {
         const timingsContainer = document.getElementById("fpgaTimings");
         timingsContainer.innerHTML = ""
 
-        for (let name in data) {
-            const timingDiv = createTimingDiv(name,data[name])
-            timingsContainer.appendChild(timingDiv)
-        }
+        col1 = document.createElement("div")
+        col1.style.marginRight = '5px'
+        col2 = document.createElement("div")
+
+        Object.entries(data).forEach(([name,val], index) => {
+            const timingDiv = createTimingDiv(name,val)
+            if (index%2==0) { col1.appendChild(timingDiv) }
+            else            { col2.appendChild(timingDiv) }
+            console.log(index, val);
+        });
+        timingsContainer.classList.add("flex-row")
+        timingsContainer.appendChild(col1)
+        timingsContainer.appendChild(col2)
+
     } catch (error) {
         readButton.innerHTML = "Read ERROR"
         return
@@ -79,10 +89,20 @@ async function readCalcTimings() {
         const timingsContainer = document.getElementById("calcTimings");
         timingsContainer.innerHTML = ""
 
-        for (let name in data) {
-            const timingDiv = createTimingDiv(name,data[name])
-            timingsContainer.appendChild(timingDiv)
-        }
+        col1 = document.createElement("div")
+        col1.style.marginRight = '5px'
+        col2 = document.createElement("div")
+
+        Object.entries(data).forEach(([name,val], index) => {
+            const timingDiv = createTimingDiv(name,val)
+            if (index%2==0) { col1.appendChild(timingDiv) }
+            else            { col2.appendChild(timingDiv) }
+            console.log(index, val);
+        });
+        timingsContainer.classList.add("flex-row")
+        timingsContainer.appendChild(col1)
+        timingsContainer.appendChild(col2)
+
     } catch (error) {
         return
     }
@@ -94,6 +114,7 @@ async function readServer() {
     try {
         await readDurations()
         await readCalcTimings()
+        await getTimingSignalChart()
     } catch (error) {
         readButton.innerHTML = "Read ERROR"
         return
@@ -111,6 +132,8 @@ async function writeServer() {
     try { await readCalcTimings() }
     catch (error) { readButton.innerHTML = "Read ERROR";  return }
     readButton.innerHTML = "Send to Server"
+
+    readServer()
 }
 
 function createTimingDiv(name,value) {
@@ -120,6 +143,29 @@ function createTimingDiv(name,value) {
     timingDiv.appendChild(timingName)
     timingDiv.appendChild(timingValue)
     return timingDiv
+}
+
+async function getTimingSignalChart() {
+    try {
+        //data = await httpRequestRaw("/timingChart","GET") // JM: better to use http request, but I'm having trouble requesting image directly from fastapi server
+        //console.log("imgData",data)
+        //url = URL.createObjectURL(data)
+        //console.log("url",url)
+        const chartContainer = document.getElementById("timingChart");
+
+        img = document.createElement('img')
+        img.setAttribute('src',SERVER_ADDR+"/timingChart?" + new Date().getTime())
+        img.setAttribute('height', '300px');
+        img.setAttribute('width', '1500px');
+
+        chartContainer.innerHTML = ""
+        chartContainer.appendChild(img)
+        chartContainer.setAttribute('align-items','center')
+
+    } catch (error) {
+        console.log(error)
+        return
+    }
 }
 
 async function readAll() {
