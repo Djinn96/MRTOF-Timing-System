@@ -1,0 +1,7 @@
+fastapi==0.115.12
+Flask==3.1.1
+matplotlib==3.10.3
+numpy==2.3.0
+opencv_python==4.11.0.86
+pandas==2.3.0
+waitress==3.0.2
